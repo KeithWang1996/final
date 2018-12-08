@@ -102,6 +102,7 @@
       </div>
       <div id="window-content5">
         <img id="meme-preview">
+        <button id="download-meme">Download</button>
       </div>
     </div>
     <div id='gallery'>
@@ -142,6 +143,7 @@
             var meme_image = document.createElement("img");
             meme_image.src = snapshot.val()[key].url;
             meme_item.id = "gallery-item";
+            meme_item.key = key;
             meme_item.appendChild(meme_image);
             meme_item.onclick = (e) => {
               document.getElementById("window").style.display = "block";
@@ -150,7 +152,8 @@
               document.getElementById("window-content3").style.display = "none";
               document.getElementById("window-content4").style.display = "none";
               document.getElementById("window-content5").style.display = "block";
-              document.getElementById("meme-preview").src = e.currentTarget.children[0].src
+              document.getElementById("meme-preview").src = e.currentTarget.children[0].src;
+              document.getElementById("meme-preview").key = e.currentTarget.key;
             }
             gallery.appendChild(meme_item);
           }
@@ -158,16 +161,32 @@
       }
     });
 
+    document.getElementById("delete-meme").addEventListener("click", (e) => {
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+          const key = e.currentTarget.parentElement.children[0].key;
+          const targetRef = databaseRef.child(`users/${user.uid}/meme/${key}`);
+          targetRef.removeValue();
+          const targetCloudRef = storageRef.child(`users/${user.uid}/meme/${key}`);
+          targetCloudRef.delete().then(function () {
+            // File deleted successfully
+          }).catch(function (error) {
+            // Uh-oh, an error occurred!
+          });
+          closeWindow();
+        }
+      });
+    })
+
+    document.getElementById("download-meme").addEventListener("click", (e) => {
+      window.location.href = e.currentTarget.parentElement.children[0].src;
+    })
+
     document.getElementById("add-meme").addEventListener("click", () => {
       document.getElementById("window").style.display = "block";
     })
     document.getElementById("close-window").addEventListener("click", () => {
       closeWindow();
-    })
-
-    document.getElementById("create-meme").addEventListener("click", () => {
-      document.getElementById("window-content").style.display = "none";
-      document.getElementById("window-content2").style.display = "block";
     })
 
     document.getElementById("back-to-1").addEventListener("click", () => {
