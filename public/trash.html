@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="gallery.css">
+  <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase.js"></script>
+  <script>
+    var config = {
+      apiKey: "AIzaSyA2_ocoR6_2CzHyd0h1IOnfpqT2y-kkvDw",
+      authDomain: "cse-134b-final.firebaseapp.com",
+      databaseURL: "https://cse-134b-final.firebaseio.com",
+      projectId: "cse-134b-final",
+      storageBucket: "cse-134b-final.appspot.com",
+      messagingSenderId: "375325789318"
+    };
+    firebase.initializeApp(config);
+  </script>
+  <title>Gallery</title>
+</head>
+<body>
+  <header>
+    <h1>
+      Memenager
+    </h1>
+    <button id='sign-out'>Sign Out</button>
+    <button id='to-gallery'>Gallery</button>
+    <h2>
+      Trash
+    </h2>
+  </header>
+  <main>
+    <div id='gallery'>
+      <div id='add-meme'>
+        <img src="images/cross.png">
+      </div>
+      <div id='gallery-item'>
+      </div>
+      <div id='gallery-item'>
+      </div>
+      <div id='gallery-item'>
+        </div>
+    </div>
+    <!--<input id="pick-file" type="file" multiple />-->
+    <!--<button id="upload">Upload</button>-->
+  </main>
+  <script>
+    document.getElementById("add-meme").addEventListener("click", () => {
+      document.getElementById("window").style.display = "block";
+    })
+    document.getElementById("close-window").addEventListener("click", () => {
+      document.getElementById("window").style.display = "none";
+      document.getElementById("window-content").style.display = "block";
+      document.getElementById("window-content2").style.display = "none";
+      document.getElementById("window-content3").style.display = "none";
+      document.getElementById("window-content4").style.display = "none";
+    })
+
+    document.getElementById("create-meme").addEventListener("click", () => {
+      document.getElementById("window-content").style.display = "none";
+      document.getElementById("window-content2").style.display = "block";
+    })
+
+    document.getElementById("back-to-1").addEventListener("click", () => {
+      document.getElementById("window-content").style.display = "block";
+      document.getElementById("window-content2").style.display = "none";
+    })
+
+    document.getElementById("next-to-3").addEventListener("click", () => {
+      document.getElementById("window-content2").style.display = "none";
+      document.getElementById("window-content3").style.display = "block";
+    })
+
+    document.getElementById("back-to-2").addEventListener("click", () => {
+      document.getElementById("window-content3").style.display = "none";
+      document.getElementById("window-content2").style.display = "block";
+    })
+
+    document.getElementById("next-to-4").addEventListener("click", () => {
+      document.getElementById("window-content3").style.display = "none";
+      document.getElementById("window-content4").style.display = "block";
+    })
+
+    document.getElementById("back-to-3").addEventListener("click", () => {
+      document.getElementById("window-content4").style.display = "none";
+      document.getElementById("window-content3").style.display = "block";
+    })
+    
+    document.getElementById("sign-out").addEventListener("click", () => {
+      firebase.auth().signOut();
+      // window.location.href = "./index.html";
+      console.log(firebase.auth().currentUser);
+    })
+
+    document.getElementById("to-gallery").addEventListener("click", () => {
+      window.location.href = "./gallery.html";
+    })
+    /*
+    document.getElementById("upload").addEventListener("click", () => {
+      var file = document.getElementById("pick-file").files[0];
+      var storageRef = firebase.storage().ref();
+      if (file) {
+        var uploadTask = storageRef.child('images/' + file.name).put(file);
+        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+          function (snapshot) {
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+            switch (snapshot.state) {
+              case firebase.storage.TaskState.PAUSED: // or 'paused'
+                console.log('Upload is paused');
+                break;
+              case firebase.storage.TaskState.RUNNING: // or 'running'
+                console.log('Upload is running');
+                break;
+            }
+          }, function (error) {
+            switch (error.code) {
+              case 'storage/unauthorized':
+                // User doesn't have permission to access the object
+                break;
+
+              case 'storage/canceled':
+                // User canceled the upload
+                break;
+              case 'storage/unknown':
+                // Unknown error occurred, inspect error.serverResponse
+                break;
+            }
+          }, function () {
+            // Upload completed successfully, now we can get the download URL
+            uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+              console.log('File available at', downloadURL);
+            });
+          });
+        firebase.auth().onAuthStateChanged(function (user) {
+          if (user) {
+            // User is signed in.
+            const userRef = firebase.database().ref(`users/${user.uid}`);
+            var imageRef = file.name;
+            userRef.push(imageRef);
+          }
+        });
+      }
+    })*/
+  </script>
+</body>
+
+</html>

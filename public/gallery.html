@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="gallery.css">
+  <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase.js"></script>
+  <script>
+    var config = {
+      apiKey: "AIzaSyA2_ocoR6_2CzHyd0h1IOnfpqT2y-kkvDw",
+      authDomain: "cse-134b-final.firebaseapp.com",
+      databaseURL: "https://cse-134b-final.firebaseio.com",
+      projectId: "cse-134b-final",
+      storageBucket: "cse-134b-final.appspot.com",
+      messagingSenderId: "375325789318"
+    };
+    firebase.initializeApp(config);
+  </script>
+  <title>Gallery</title>
+</head>
+
+<body>
+  <header>
+    <h1>
+      Memenager
+    </h1>
+    <button id='to-account'>Account</button>
+    <button id='sign-out'>Sign Out</button>
+    <button id='to-trash'>Trash</button>
+    <h2>
+      Gallery
+    </h2>
+  </header>
+  <main>
+    <div id='window'>
+      <h1>
+        Memenager
+      </h1>
+      <div id="close-window">X</div>
+      <br>
+      <table id="window-content">
+        <tr>
+          <th>
+            Upload Meme
+          </th>
+          <th>
+            <input id="upload-meme" type="file">
+            <button id="upload-meme-submit">Submit</button>
+          </th>
+        </tr>
+        <tr>
+          <th>
+            Import Meme by URL
+          </th>
+          <th>
+            <button id="import-meme">Import</button>
+            <input id="meme-url" type="text">
+          </th>
+        </tr>
+        <tr>
+          <th>
+            Create your Own meme
+          </th>
+          <th>
+            <button id="create-meme">Create</button>
+          </th>
+        </tr>
+      </table>
+      <table id="window-content2">
+        <tr>
+          <th>
+            Upload Image
+          </th>
+          <th>
+            <input id="upload-image" type="file">
+            <button id="upload-image-submit">Submit</button>
+          </th>
+        </tr>
+        <tr>
+          <th>
+            Import Image by URL
+          </th>
+          <th>
+            <button id="import-image">Import</button><input id="image-url" type="text">
+          </th>
+        </tr>
+        <tr>
+          <th>
+            <button id="back-to-1">Back</button>
+          </th>
+          <th>
+            <button id="next-to-3">Next</button>
+          </th>
+        </tr>
+      </table>
+      <div id="window-content3">
+        <img id="image-to-edit"><br>
+        <button id="back-to-2">Back</button>
+        <input id="meme-text" type="text">
+        <button id="next-to-4">Next</button>
+      </div>
+      <div id="window-content4">
+        <button id="back-to-3">Back</button>
+        <input id="share-url" type="text">
+        <button id="share-copy">Copy to Clipboard</button>
+      </div>
+    </div>
+    <div id='gallery'>
+      <div id='add-meme'>
+        <img src="images/plus.png">
+      </div>
+    </div>
+    <!--<input id="pick-file" type="file" multiple />-->
+    <!--<button id="upload">Upload</button>-->
+  </main>
+  <script>
+    function closeWindow() {
+      document.getElementById("window").style.display = "none";
+      document.getElementById("meme-url").value = "";
+      document.getElementById("image-url").value = "";
+      document.getElementById("meme-text").value = "";
+      document.getElementById("share-url").value = "";
+      document.getElementById("window-content").style.display = "block";
+      document.getElementById("window-content2").style.display = "none";
+      document.getElementById("window-content3").style.display = "none";
+      document.getElementById("window-content4").style.display = "none";
+    }
+    var storageRef = firebase.storage().ref();
+    var databaseRef = firebase.database().ref();
+
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        const userRef = databaseRef.child(`users/${user.uid}/meme`);
+        const gallery = document.getElementById("gallery");
+        userRef.on('value', function (snapshot) {
+          while (gallery.lastChild.id !== 'add-meme') {
+            gallery.removeChild(gallery.lastChild);
+          }
+          document.getElementById("gallery")
+          for (var key in snapshot.val()) {
+            var meme_item = document.createElement("div");
+            var meme_image = document.createElement("img");
+            meme_image.src = snapshot.val()[key].url;
+            meme_item.id = "gallery-item";
+            meme_item.appendChild(meme_image);
+            gallery.appendChild(meme_item);
+          }
+        });
+      }
+    });
+
+    document.getElementById("add-meme").addEventListener("click", () => {
+      document.getElementById("window").style.display = "block";
+    })
+    document.getElementById("close-window").addEventListener("click", () => {
+      closeWindow();
+    })
+
+    document.getElementById("create-meme").addEventListener("click", () => {
+      document.getElementById("window-content").style.display = "none";
+      document.getElementById("window-content2").style.display = "block";
+    })
+
+    document.getElementById("back-to-1").addEventListener("click", () => {
+      document.getElementById("window-content").style.display = "block";
+      document.getElementById("window-content2").style.display = "none";
+    })
+
+    document.getElementById("next-to-3").addEventListener("click", () => {
+      document.getElementById("window-content2").style.display = "none";
+      document.getElementById("window-content3").style.display = "block";
+    })
+
+    document.getElementById("back-to-2").addEventListener("click", () => {
+      document.getElementById("window-content3").style.display = "none";
+      document.getElementById("window-content2").style.display = "block";
+    })
+
+    document.getElementById("next-to-4").addEventListener("click", () => {
+      document.getElementById("window-content3").style.display = "none";
+      document.getElementById("window-content4").style.display = "block";
+    })
+
+    document.getElementById("back-to-3").addEventListener("click", () => {
+      document.getElementById("window-content4").style.display = "none";
+      document.getElementById("window-content3").style.display = "block";
+    })
+
+    document.getElementById("sign-out").addEventListener("click", () => {
+      firebase.auth().signOut();
+      window.location.href = "./index.html";
+    })
+
+    document.getElementById("to-trash").addEventListener("click", () => {
+      window.location.href = "./trash.html";
+    })
+
+    document.getElementById("import-meme").addEventListener("click", () => {
+      if (document.getElementById("meme-url").value.match(/\.(jpeg|jpg|gif|png)$/) != null) {
+        firebase.auth().onAuthStateChanged(function (user) {
+          if (user) {
+            // User is signed in.
+            const userRef = databaseRef.child(`users/${user.uid}/meme`);
+            var memeURL = document.getElementById("meme-url").value;
+            var memeData = {
+              "url": memeURL
+            }
+            userRef.push(memeData);
+          }
+        });
+        setTimeout(() => {
+          closeWindow();
+        }, 100);
+      }
+      else {
+        console.log("invalid url");
+      }
+    })
+
+    document.getElementById("import-image").addEventListener("click", () => {
+      if (document.getElementById("image-url").value.match(/\.(jpeg|jpg|gif|png)$/) != null) {
+        firebase.auth().onAuthStateChanged(function (user) {
+          if (user) {
+            // User is signed in.
+            const userRef = databaseRef.child(`users/${user.uid}/image`);
+            var imageURL = document.getElementById("image-url").value;
+            var imageData = {
+              "url": imageURL
+            }
+            userRef.push(imageData);
+          }
+        });
+        setTimeout(() => {
+          closeWindow();
+        }, 100);
+      }
+      else {
+        console.log("invalid url");
+      }
+    })
+
+    document.getElementById("upload-meme-submit").addEventListener("click", () => {
+      var file = document.getElementById("upload-meme").files[0];
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (user && file) {
+          const userRef = databaseRef.child(`users/${user.uid}/meme`);
+          var memeData = {
+            "reference": file.name,
+            "url": ""
+          }
+          var key = userRef.push(memeData).getKey();
+          var uploadTask = storageRef.child(`users/${user.uid}/meme/` + `${key}/${file.name}`).put(file);
+          uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+            function (snapshot) {
+              // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+              var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              console.log('Upload is ' + progress + '% done');
+              switch (snapshot.state) {
+                case firebase.storage.TaskState.PAUSED: // or 'paused'
+                  console.log('Upload is paused');
+                  break;
+                case firebase.storage.TaskState.RUNNING: // or 'running'
+                  console.log('Upload is running');
+                  break;
+              }
+            }, function (error) {
+              switch (error.code) {
+                case 'storage/unauthorized':
+                  // User doesn't have permission to access the object
+                  break;
+                case 'storage/canceled':
+                  // User canceled the upload
+                  break;
+                case 'storage/unknown':
+                  // Unknown error occurred, inspect error.serverResponse
+                  break;
+              }
+            }, function () {
+              // Upload completed successfully, now we can get the download URL
+              uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                const userRef = databaseRef.child(`users/${user.uid}/meme`);
+                var memeData = {
+                  "url": downloadURL
+                }
+                var updates = {};
+                updates[`users/${user.uid}/meme/${key}`] = memeData;
+                databaseRef.update(updates);
+              });
+            });
+        }
+      });
+    })
+
+    document.getElementById("upload-image-submit").addEventListener("click", () => {
+      var file = document.getElementById("upload-image").files[0];
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (user && file) {
+          const userRef = databaseRef.child(`users/${user.uid}/image`);
+          var imageData = {
+            "reference": file.name,
+            "url": ""
+          }
+          var key = userRef.push(imageData).getKey();
+          var uploadTask = storageRef.child(`users/${user.uid}/image/` + `${key}/${file.name}`).put(file);
+          uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+            function (snapshot) {
+              // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+              var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              console.log('Upload is ' + progress + '% done');
+              switch (snapshot.state) {
+                case firebase.storage.TaskState.PAUSED: // or 'paused'
+                  console.log('Upload is paused');
+                  break;
+                case firebase.storage.TaskState.RUNNING: // or 'running'
+                  console.log('Upload is running');
+                  break;
+              }
+            }, function (error) {
+              switch (error.code) {
+                case 'storage/unauthorized':
+                  // User doesn't have permission to access the object
+                  break;
+                case 'storage/canceled':
+                  // User canceled the upload
+                  break;
+                case 'storage/unknown':
+                  // Unknown error occurred, inspect error.serverResponse
+                  break;
+              }
+            }, function () {
+              // Upload completed successfully, now we can get the download URL
+              uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                const userRef = databaseRef.child(`users/${user.uid}/image`);
+                var imageData = {
+                  "url": downloadURL
+                }
+                var updates = {};
+                updates[`users/${user.uid}/image/${key}`] = imageData;
+                databaseRef.update(updates);
+                document.getElementById("image-to-edit").src = downloadURL;
+              });
+            });
+        }
+      });
+    })
+  </script>
+</body>
+
+</html>
