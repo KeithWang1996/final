@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="gallery.css">
+  <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase.js"></script>
+  <script>
+    var config = {
+      apiKey: "AIzaSyA2_ocoR6_2CzHyd0h1IOnfpqT2y-kkvDw",
+      authDomain: "cse-134b-final.firebaseapp.com",
+      databaseURL: "https://cse-134b-final.firebaseio.com",
+      projectId: "cse-134b-final",
+      storageBucket: "cse-134b-final.appspot.com",
+      messagingSenderId: "375325789318"
+    };
+    firebase.initializeApp(config);
+  </script>
+  <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
+  <title>Account</title>
+</head>
+
+<body>
+  <header>
+    <h1>
+      Memenager
+    </h1>
+    <button id='sign-out'>Sign Out</button>
+    <button id='to-gallery'>Gallery</button>
+    <button id='to-trash'>Trash</button>
+    <h2>
+      Gallery
+    </h2>
+  </header>
+  <main>
+    <p>
+      Email: <input type="text" id="email">
+    </p>
+    <p>
+      New Password: <input type="Password" id="new-password">
+    </p>
+    <button id="change-submit">Submit</button>
+    <p id="result"></p>
+  </main>
+  <script>
+    document.getElementById("sign-out").addEventListener("click", () => {
+      firebase.auth().signOut();
+      window.location.href = "./index.html";
+    })
+
+    document.getElementById("to-gallery").addEventListener("click", () => {
+      window.location.href = "./gallery.html";
+    })
+
+    document.getElementById("to-trash").addEventListener("click", () => {
+      window.location.href = "./trash.html";
+    })
+
+    document.getElementById("change-submit").addEventListener("click", () => {
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+          var email = document.getElementById("email").value;
+          var password = document.getElementById("new-password").value;
+          if (email == user.email && password.length >= 8) {
+            user.updatePassword(password).then(function () {
+              // Update successful.
+              document.getElementById("result").innerHTML = "Successfully change password!"
+            }).catch(function (error) {
+              // An error happened.
+              document.getElementById("result").innerHTML = "Fail to change password"
+            });
+          } else {
+            document.getElementById("result").innerHTML = "Fail to change password"
+          }
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

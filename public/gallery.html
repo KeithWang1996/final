@@ -58,14 +58,6 @@
             <input id="meme-url" type="text">
           </th>
         </tr>
-        <tr>
-          <th>
-            Create your Own meme
-          </th>
-          <th>
-            <button id="create-meme">Create</button>
-          </th>
-        </tr>
       </table>
       <table id="window-content2">
         <tr>
@@ -95,7 +87,10 @@
         </tr>
       </table>
       <div id="window-content3">
-        <img id="image-to-edit"><br>
+        <canvas id="image-editor">
+          <img id="image-to-edit" src="https://www.lifewire.com/thmb/hR2GPjS2ZUQBRv2CHCdPcIfBQZ0=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/sstMxMh-5ab00c7bfa6bcc003622e4f5.jpg">
+        </canvas>
+        <br>
         <button id="back-to-2">Back</button>
         <input id="meme-text" type="text">
         <button id="next-to-4">Next</button>
@@ -104,6 +99,9 @@
         <button id="back-to-3">Back</button>
         <input id="share-url" type="text">
         <button id="share-copy">Copy to Clipboard</button>
+      </div>
+      <div id="window-content5">
+        <img id="meme-preview">
       </div>
     </div>
     <div id='gallery'>
@@ -125,6 +123,7 @@
       document.getElementById("window-content2").style.display = "none";
       document.getElementById("window-content3").style.display = "none";
       document.getElementById("window-content4").style.display = "none";
+      document.getElementById("window-content5").style.display = "none";
     }
     var storageRef = firebase.storage().ref();
     var databaseRef = firebase.database().ref();
@@ -144,6 +143,15 @@
             meme_image.src = snapshot.val()[key].url;
             meme_item.id = "gallery-item";
             meme_item.appendChild(meme_image);
+            meme_item.onclick = (e) => {
+              document.getElementById("window").style.display = "block";
+              document.getElementById("window-content").style.display = "none";
+              document.getElementById("window-content2").style.display = "none";
+              document.getElementById("window-content3").style.display = "none";
+              document.getElementById("window-content4").style.display = "none";
+              document.getElementById("window-content5").style.display = "block";
+              document.getElementById("meme-preview").src = e.currentTarget.children[0].src
+            }
             gallery.appendChild(meme_item);
           }
         });
@@ -196,6 +204,10 @@
       window.location.href = "./trash.html";
     })
 
+    document.getElementById("to-account").addEventListener("click", () => {
+      window.location.href = "./account.html";
+    })
+
     document.getElementById("import-meme").addEventListener("click", () => {
       if (document.getElementById("meme-url").value.match(/\.(jpeg|jpg|gif|png)$/) != null) {
         firebase.auth().onAuthStateChanged(function (user) {
@@ -229,10 +241,13 @@
               "url": imageURL
             }
             userRef.push(imageData);
+            document.getElementById("image-to-edit").src = imageURL;
+            document.getElementById("image-editor").getContext("2d").drawImage(document.getElementById("image-to-edit"), 10, 10)
           }
         });
         setTimeout(() => {
-          closeWindow();
+          document.getElementById("window-content2").style.display = "none";
+          document.getElementById("window-content3").style.display = "block";
         }, 100);
       }
       else {
